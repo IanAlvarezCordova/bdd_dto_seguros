@@ -1,4 +1,4 @@
-package com.example.gestion_academica.config;
+package com.example.bdd_dto.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 @Configuration
 public class DatabaseConfig {
 
-    @Value("${DATABASE_URL:postgresgiql://postgres:admin@localhost:5432/bdd_dto_seguros}")
+    @Value("${DATABASE_URL:postgresgiql://postgres:admin@localhost:5432/gestion_academica}")
     private String databaseUrl;
 
     @Bean
@@ -32,7 +32,7 @@ public class DatabaseConfig {
         } catch (URISyntaxException | NullPointerException e) {
             // Fallback para entorno local
             return DataSourceBuilder.create()
-                    .url("jdbc:postgresql://localhost:5432/bdd_dto_seguros")
+                    .url("jdbc:postgresql://localhost:5432/gestion_academica")
                     .username("postgres")
                     .password("admin")
                     .driverClassName("org.postgresql.Driver")
