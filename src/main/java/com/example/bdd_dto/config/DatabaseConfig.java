@@ -12,27 +12,31 @@ import java.net.URISyntaxException;
 @Configuration
 public class DatabaseConfig {
 
-    @Value("${DATABASE_URL:jdbc:postgresql://localhost:5432/bdd_dto_seguros?user=postgres&password=admin}")
+    @Value("${DATABASE_URL:postgresgiql://postgres:admin@localhost:5432/bdd_dto_seguros}")
     private String databaseUrl;
 
     @Bean
     public DataSource dataSource() throws URISyntaxException {
-        URI dbUri;
         try {
-            dbUri = new URI(databaseUrl.startsWith("postgresql://") ? databaseUrl : "postgresql://" + databaseUrl.substring("jdbc:postgresql://".length()));
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Invalid DATABASE_URL: " + databaseUrl, e);
+            URI dbUri = new URI(databaseUrl);
+            String username = dbUri.getUserInfo() != null ? dbUri.getUserInfo().split(":")[0] : "postgres";
+            String password = dbUri.getUserInfo() != null ? dbUri.getUserInfo().split(":")[1] : "admin";
+            String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ":" + (dbUri.getPort() != -1 ? dbUri.getPort() : 5432) + dbUri.getPath();
+
+            return DataSourceBuilder.create()
+                    .url(dbUrl)
+                    .username(username)
+                    .password(password)
+                    .driverClassName("org.postgresql.Driver")
+                    .build();
+        } catch (URISyntaxException | NullPointerException e) {
+            // Fallback para entorno local
+            return DataSourceBuilder.create()
+                    .url("jdbc:postgresql://localhost:5432/bdd_dto_seguros")
+                    .username("postgres")
+                    .password("admin")
+                    .driverClassName("org.postgresql.Driver")
+                    .build();
         }
-
-        String username = dbUri.getUserInfo().split(":")[0];
-        String password = dbUri.getUserInfo().split(":")[1];
-        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ":" + (dbUri.getPort() != -1 ? dbUri.getPort() : 5432) + dbUri.getPath();
-
-        return DataSourceBuilder.create()
-                .url(dbUrl)
-                .username(username)
-                .password(password)
-                .driverClassName("org.postgresql.Driver")
-                .build();
     }
 }
