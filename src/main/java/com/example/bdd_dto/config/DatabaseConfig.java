@@ -1,4 +1,4 @@
-package com.example.gestion_academica.config;
+package com.example.bdd_dto.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
