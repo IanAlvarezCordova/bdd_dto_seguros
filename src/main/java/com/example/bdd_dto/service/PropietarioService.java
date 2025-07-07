@@ -70,16 +70,6 @@ public class PropietarioService {
     public void eliminarPropietario(Long id) {
         Propietario propietario = propietarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Propietario no encontrado"));
-        // Eliminar todos los automóviles asociados
-        for (Automovil automovil : propietario.getAutomoviles()) {
-            // Si el automóvil tiene un seguro, eliminarlo primero
-            if (automovil.getSeguro() != null) {
-                automovil.setSeguro(null);
-                automovilRepository.save(automovil);
-            }
-            automovilRepository.delete(automovil);
-        }
-        propietario.setAutomoviles(new ArrayList<>());
         propietarioRepository.delete(propietario);
     }
 
