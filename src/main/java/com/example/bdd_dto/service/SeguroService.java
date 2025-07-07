@@ -128,9 +128,19 @@ public class SeguroService {
             case "Hyundai": return 0.1;
             case "Tesla": return 0.2;
             case "Toyota": return 0.3;
-            default: return 0.1;
+            case "Ford": return 0.25;
+            case "Chevrolet": return 0.22;
+            case "BMW": return 0.35;
+            case "Mercedes": return 0.4;
+            case "Kia": return 0.15;
+            case "Nissan": return 0.18;
+            case "Volkswagen": return 0.27;
+            case "Audi": return 0.33;
+            case "Honda": return 0.2;
+            default: return 0.1; // Valor por defecto
         }
     }
+
 
     private double getEdadFactor(int edad) {
         if (edad >= 18 && edad < 23) return 1.5;

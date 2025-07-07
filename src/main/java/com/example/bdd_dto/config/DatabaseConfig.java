@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 @Configuration
 public class DatabaseConfig {
 
-    @Value("${DATABASE_URL:postgresgiql://postgres:admin@localhost:5432/gestion_academica}")
+    @Value("${DATABASE_URL:postgresgiql://postgres:admin@localhost:5432/bdd_dto_seguros}")
     private String databaseUrl;
 
     @Bean
@@ -32,7 +32,7 @@ public class DatabaseConfig {
         } catch (URISyntaxException | NullPointerException e) {
             // Fallback para entorno local
             return DataSourceBuilder.create()
-                    .url("jdbc:postgresql://localhost:5432/gestion_academica")
+                    .url("jdbc:postgresql://localhost:5432/bdd_dto_seguros")
                     .username("postgres")
                     .password("admin")
                     .driverClassName("org.postgresql.Driver")
