@@ -11,11 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class PropietarioService {
@@ -28,10 +24,10 @@ public class PropietarioService {
 
     public PropietarioDTO crearPropietario(PropietarioDTO propietarioDTO) {
         Propietario propietario = new Propietario();
-        propietario.setNombre(propietarioDTO.getNombreCompleto().split(" ")[0]);
-        propietario.setApellido(propietarioDTO.getNombreCompleto().split(" ")[1]);
+        String[] nombreApellido = propietarioDTO.getNombreCompleto().split(" ");
+        propietario.setNombre(nombreApellido[0]);
+        propietario.setApellido(nombreApellido.length > 1 ? nombreApellido[1] : "");
         propietario.setEdad(propietarioDTO.getEdad());
-        // Inicializar automoviles como lista vacía si automovilIds es null o vacío
         List<Long> automovilIds = propietarioDTO.getAutomovilIds() != null ? propietarioDTO.getAutomovilIds() : new ArrayList<>();
         List<Automovil> automoviles = new ArrayList<>();
         if (!automovilIds.isEmpty()) {
@@ -44,18 +40,19 @@ public class PropietarioService {
         propietarioRepository.save(propietario);
         return convertirADTO(propietario);
     }
+
     public PropietarioDTO obtenerPropietarioPorId(Long id) {
         Propietario propietario = propietarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Propietario no encontrado"));
         return convertirADTO(propietario);
     }
 
-
     public PropietarioDTO actualizarPropietario(Long id, PropietarioDTO propietarioDTO) {
         Propietario propietario = propietarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Propietario no encontrado"));
-        propietario.setNombre(propietarioDTO.getNombreCompleto().split(" ")[0]);
-        propietario.setApellido(propietarioDTO.getNombreCompleto().split(" ")[1]);
+        String[] nombreApellido = propietarioDTO.getNombreCompleto().split(" ");
+        propietario.setNombre(nombreApellido[0]);
+        propietario.setApellido(nombreApellido.length > 1 ? nombreApellido[1] : "");
         propietario.setEdad(propietarioDTO.getEdad());
         List<Long> automovilIds = propietarioDTO.getAutomovilIds() != null ? propietarioDTO.getAutomovilIds() : new ArrayList<>();
         List<Automovil> automoviles = new ArrayList<>();
@@ -73,10 +70,16 @@ public class PropietarioService {
     public void eliminarPropietario(Long id) {
         Propietario propietario = propietarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Propietario no encontrado"));
+        // Eliminar todos los automóviles asociados
         for (Automovil automovil : propietario.getAutomoviles()) {
-            automovil.setPropietario(null);
-            automovilRepository.save(automovil);
+            // Si el automóvil tiene un seguro, eliminarlo primero
+            if (automovil.getSeguro() != null) {
+                automovil.setSeguro(null);
+                automovilRepository.save(automovil);
+            }
+            automovilRepository.delete(automovil);
         }
+        propietario.setAutomoviles(new ArrayList<>());
         propietarioRepository.delete(propietario);
     }
 
@@ -89,7 +92,6 @@ public class PropietarioService {
     private PropietarioDTO convertirADTO(Propietario propietario) {
         PropietarioDTO dto = new PropietarioDTO();
         dto.setId(propietario.getId());
-        //definir el nombre completo del propietario usando el nombre y apellido en el DTO
         dto.setNombreCompleto(propietario.getNombre() + " " + propietario.getApellido());
         dto.setEdad(propietario.getEdad());
         dto.setAutomovilIds(
