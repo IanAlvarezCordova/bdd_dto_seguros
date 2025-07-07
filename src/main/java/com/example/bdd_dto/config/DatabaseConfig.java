@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 @Configuration
 public class DatabaseConfig {
 
-    @Value("${DATABASE_URL:jdbc:postgresql://localhost:5432/gestion_academica?user=postgres&password=admin}")
+    @Value("${DATABASE_URL:jdbc:postgresql://localhost:5432/bdd_dto_seguros?user=postgres&password=admin}")
     private String databaseUrl;
 
     @Bean
